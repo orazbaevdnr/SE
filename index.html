@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Campus Room Availability Checker (Baseline Monolith)</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      background: #f4f6f8;
+      color: #333;
+    }
+    .card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+    }
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background: #0066cc;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover {
+      background: #0052a3;
+    }
+    #result {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 4px;
+      display: none;
+      font-weight: bold;
+    }
+    .available {
+      background: #e6f7e6;
+      color: #1b6d1b;
+      border: 1px solid #b7eb8f;
+    }
+    .unavailable {
+      background: #ffebe6;
+      color: #bf2600;
+      border: 1px solid #ffa39e;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Smart Campus Room Checker (Practice #08 Baseline)</h1>
+    <p>Room: <strong>Auditorium A</strong> (Single Hardcoded Room)</p>
+    
+    <div class="form-group">
+      <label for="startTime">Start Time (Minutes from 00:00, e.g. 600 for 10:00):</label>
+      <input type="number" id="startTime" placeholder="600" />
+    </div>
+
+    <div class="form-group">
+      <label for="endTime">End Time (Minutes from 00:00, e.g. 660 for 11:00):</label>
+      <input type="number" id="endTime" placeholder="660" />
+    </div>
+
+    <button id="checkBtn">Check Availability</button>
+
+    <div id="result"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
