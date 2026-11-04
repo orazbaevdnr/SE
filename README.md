@@ -29,7 +29,11 @@ A modular, client-side web application built with Vanilla JS, Vite, and Vitest. 
 - Node.js (v18+ or v24+)
 - npm (v9+)
 
-### Installation
+### Quick Start on Windows (1-Click)
+- **`start.bat`**: Дважды кликните по файлу `start.bat` в папке проекта. Скрипт сам проверит Node.js, установит зависимости (если их нет), выполнит все 12 тестов Vitest и автоматически откроет приложение в браузере!
+- **`test.bat`**: Быстрый запуск всех 12 тестов в подробном (verbose) режиме в 1 клик.
+
+### Terminal Commands
 Clone the repository and install dependencies:
 ```bash
 npm install
