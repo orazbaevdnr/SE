@@ -100,6 +100,10 @@ function render() {
     const card = document.createElement('div');
     card.className = `room-card${isSelected ? ' selected' : ''}`;
     card.setAttribute('data-room-id', room.id);
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+    card.setAttribute('aria-label', `Select ${room.name}, capacity ${room.capacity}${room.blocked ? ', blocked' : ''}`);
 
     // Bookings summary
     let bookingsHtml = '';
@@ -130,9 +134,17 @@ function render() {
       </div>
     `;
 
-    card.addEventListener('click', () => {
+    const selectThisRoom = () => {
       state.selectedRoomId = room.id;
       render();
+    };
+
+    card.addEventListener('click', selectThisRoom);
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectThisRoom();
+      }
     });
 
     roomsContainer.appendChild(card);
