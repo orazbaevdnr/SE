@@ -3,88 +3,441 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Smart Campus Room Availability Checker (Baseline Monolith)</title>
+  <title>Smart Campus - Room Availability Checker</title>
   <style>
+    :root {
+      --primary: #1e40af;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --success-bg: #ecfdf5;
+      --success-text: #065f46;
+      --success-border: #a7f3d0;
+      --danger-bg: #fef2f2;
+      --danger-text: #991b1b;
+      --danger-border: #fecaca;
+      --warning-bg: #fffbeb;
+      --warning-text: #92400e;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: system-ui, -apple-system, sans-serif;
-      max-width: 600px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-      background: #f4f6f8;
-      color: #333;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 1.5rem 1rem;
+      min-width: 320px;
     }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 0.25rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 0.2rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #e0e7ff;
+      color: #3730a3;
+      margin-top: 0.5rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .grid {
+        grid-template-columns: 360px 1fr;
+      }
+    }
+
     .card {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
     }
-    .form-group {
+
+    .card h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
       margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
+
+    .form-group {
+      margin-bottom: 1.1rem;
+    }
+
     label {
       display: block;
-      margin-bottom: 0.25rem;
+      font-size: 0.85rem;
       font-weight: 600;
+      margin-bottom: 0.35rem;
+      color: var(--text);
     }
-    input {
+
+    .help-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    input[type="number"],
+    input[type="time"],
+    select {
       width: 100%;
-      padding: 0.5rem;
-      box-sizing: border-box;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      background: #ffffff;
+      color: var(--text);
+      transition: border-color 0.15s ease;
     }
-    button {
-      background: #0066cc;
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 4px;
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.15);
+    }
+
+    .time-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-top: 0.35rem;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      font-weight: 500;
       cursor: pointer;
-      font-weight: 600;
     }
-    button:hover {
-      background: #0052a3;
+
+    .checkbox-label input {
+      cursor: pointer;
     }
-    #result {
-      margin-top: 1rem;
+
+    /* Rooms Catalog list */
+    .rooms-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .room-card {
+      border: 2px solid var(--border);
+      border-radius: 10px;
       padding: 1rem;
-      border-radius: 4px;
-      display: none;
-      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
     }
-    .available {
-      background: #e6f7e6;
-      color: #1b6d1b;
-      border: 1px solid #b7eb8f;
+
+    .room-card:hover {
+      border-color: #cbd5e1;
+      transform: translateY(-1px);
     }
-    .unavailable {
-      background: #ffebe6;
-      color: #bf2600;
-      border: 1px solid #ffa39e;
+
+    .room-card.selected {
+      border-color: var(--primary);
+      background-color: #eff6ff;
+    }
+
+    .room-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.5rem;
+    }
+
+    .room-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .room-cap {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .room-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.5rem;
+    }
+
+    .tag {
+      font-size: 0.72rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: 500;
+    }
+
+    .tag.blocked {
+      background: #fee2e2;
+      color: #991b1b;
+      font-weight: 700;
+    }
+
+    .tag.booked {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    /* Status Display Box */
+    .status-panel {
+      margin-top: 1.5rem;
+      padding: 1.25rem;
+      border-radius: var(--radius);
+      border: 2px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .status-panel.available {
+      background: var(--success-bg);
+      border-color: var(--success-border);
+      color: var(--success-text);
+    }
+
+    .status-panel.unavailable {
+      background: var(--danger-bg);
+      border-color: var(--danger-border);
+      color: var(--danger-text);
+    }
+
+    .status-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .status-reason {
+      font-size: 0.88rem;
+      line-height: 1.4;
+    }
+
+    /* Empty state */
+    .empty-state {
+      padding: 2.5rem 1rem;
+      text-align: center;
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: 10px;
+      color: var(--text-muted);
+    }
+
+    .empty-state-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state-msg {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    /* Reset button */
+    .btn-reset {
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .btn-reset:hover {
+      background: #f1f5f9;
+      color: var(--text);
+    }
+
+    /* Mobile responsiveness check (375px) */
+    @media (max-width: 420px) {
+      body {
+        padding: 1rem 0.5rem;
+      }
+      .card {
+        padding: 1rem;
+      }
+      .time-inputs {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Smart Campus Room Checker (Practice #08 Baseline)</h1>
-    <p>Room: <strong>Auditorium A</strong> (Single Hardcoded Room)</p>
-    
-    <div class="form-group">
-      <label for="startTime">Start Time (Minutes from 00:00, e.g. 600 for 10:00):</label>
-      <input type="number" id="startTime" placeholder="600" />
+  <div class="container">
+    <header>
+      <h1>Smart Campus Room Availability</h1>
+      <p>Modular Client-Side Availability Engine & Catalog Filter</p>
+      <div class="badge-pill">Assignment #04 • Vanilla JS + Vite & Vitest</div>
+    </header>
+
+    <div class="grid">
+      <!-- Left Column: Controls & Filters -->
+      <section class="controls-column">
+        <!-- Simulation Settings -->
+        <div class="card" style="margin-bottom: 1.25rem;">
+          <h2>
+            <span>Time Settings</span>
+          </h2>
+
+          <div class="form-group">
+            <label for="inputNow">Current Campus Time ("Now"):</label>
+            <input type="time" id="inputNow" value="08:00" />
+            <div class="help-text">Simulated reference time (fixed at 08:00 by default).</div>
+          </div>
+
+          <div class="time-inputs">
+            <div class="form-group">
+              <label for="inputStart">Start Time:</label>
+              <input type="time" id="inputStart" value="11:30" />
+            </div>
+            <div class="form-group">
+              <label for="inputEnd">End Time:</label>
+              <input type="time" id="inputEnd" value="12:30" />
+            </div>
+          </div>
+          <div class="help-text" id="durationText">Duration: 60 min (Max 120 min permitted)</div>
+        </div>
+
+        <!-- Room Catalog Filters -->
+        <div class="card">
+          <h2>
+            <span>Filter Catalog</span>
+            <button class="btn-reset" id="btnResetFilters" type="button">Reset</button>
+          </h2>
+
+          <div class="form-group">
+            <label for="inputCapacity">Minimum Capacity (Attendees):</label>
+            <input type="number" id="inputCapacity" min="0" max="200" placeholder="e.g. 20" value="" />
+          </div>
+
+          <div class="form-group">
+            <label>Required Equipment (All match):</label>
+            <div class="checkbox-grid" id="equipmentCheckboxes">
+              <label class="checkbox-label">
+                <input type="checkbox" name="equipment" value="Projector" />
+                Projector
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="equipment" value="Mic" />
+                Mic
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="equipment" value="PCs" />
+                PCs
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="equipment" value="Whiteboard" />
+                Whiteboard
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="equipment" value="TV" />
+                TV
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="equipment" value="Sound System" />
+                Sound System
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Room Catalog & Reactive Availability Status -->
+      <section class="results-column">
+        <div class="card">
+          <h2>
+            <span>Select a Room</span>
+            <span style="font-size: 0.85rem; font-weight: normal; color: var(--text-muted);" id="matchCount">4 rooms</span>
+          </h2>
+
+          <!-- Rooms List (Reactive) -->
+          <div class="rooms-list" id="roomsContainer">
+            <!-- Dynamically populated by app.js -->
+          </div>
+
+          <!-- Empty State (F4) -->
+          <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state-icon">🔍</div>
+            <div class="empty-state-msg">No matching rooms found</div>
+            <div class="help-text">Try reducing attendees or unchecking required equipment.</div>
+          </div>
+
+          <!-- Availability Status Panel (F5 Reactivity) -->
+          <div class="status-panel available" id="statusPanel">
+            <div class="status-title" id="statusTitle">
+              <span id="statusIcon">✓</span>
+              <span id="statusHeading">Available for Booking</span>
+            </div>
+            <div class="status-reason" id="statusReason">
+              Auditorium A is free during 11:30 - 12:30.
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
-
-    <div class="form-group">
-      <label for="endTime">End Time (Minutes from 00:00, e.g. 660 for 11:00):</label>
-      <input type="number" id="endTime" placeholder="660" />
-    </div>
-
-    <button id="checkBtn">Check Availability</button>
-
-    <div id="result"></div>
   </div>
 
-  <script src="script.js"></script>
+  <script type="module" src="/src/ui/app.js"></script>
 </body>
 </html>
