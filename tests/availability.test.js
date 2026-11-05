@@ -7,8 +7,10 @@ describe('Availability Domain Logic (AC1 - AC5)', () => {
   ];
   const now = 480; // 08:00
 
-  // T01: Allows touching endpoints (e.g., req 660-720 alongside existing 600-660)
-  it('T01: Allows touching endpoints (AC4)', () => {
+  // T01: Allows touching endpoints (e.g., req 660-720 alongside existing 600-660) & preserves immutability (AC5)
+  it('T01: Allows touching endpoints (AC4) and preserves immutability (AC5)', () => {
+    const originalSnapshot = JSON.parse(JSON.stringify(existingBookings));
+
     // Request adjacent right touching endpoint (660 - 720)
     const canBookRightTouching = canBook({
       start: 660,
@@ -28,6 +30,9 @@ describe('Availability Domain Logic (AC1 - AC5)', () => {
       bookings: existingBookings
     });
     expect(canBookLeftTouching).toBe(true);
+
+    // AC5 Verification: ensure the bookings array was not mutated (e.g. no in-place sort or element modification)
+    expect(existingBookings).toEqual(originalSnapshot);
   });
 
   // T02: Rejects overlapping intervals (e.g., req 630-690)
@@ -101,6 +106,13 @@ describe('Availability Domain Logic (AC1 - AC5)', () => {
 
     // String numbers without parsing should be rejected
     expect(canBook({ start: '500', end: 560, now, blocked: false, bookings: [] })).toBe(false);
+
+    // null, undefined, NaN, Infinity, and object inputs
+    expect(canBook({ start: null, end: 600, now, blocked: false, bookings: [] })).toBe(false);
+    expect(canBook({ start: 500, end: undefined, now, blocked: false, bookings: [] })).toBe(false);
+    expect(canBook({ start: NaN, end: 600, now, blocked: false, bookings: [] })).toBe(false);
+    expect(canBook({ start: 500, end: Infinity, now, blocked: false, bookings: [] })).toBe(false);
+    expect(canBook({ start: {}, end: 600, now, blocked: false, bookings: [] })).toBe(false);
 
     // Out of bounds minutes (< 0 or > 1440)
     expect(canBook({ start: -10, end: 60, now: -20, blocked: false, bookings: [] })).toBe(false);
