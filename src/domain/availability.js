@@ -11,6 +11,10 @@
  * - AC4 (Overlap): Strict overlap rule: start < existing.end && end > existing.start.
  *                  Touching endpoints (e.g. 600-660 and 660-720) do NOT overlap.
  * - AC5 (Pure): Pure function; does not mutate input parameters or bookings array.
+ * 
+ * Pattern Applied:
+ * - Adapter Pattern: Uses normalizeBooking to transparently adapt inconsistent booking shapes
+ *   ({start, end} vs {startTime, endTime}) without coupling core validation to input shapes.
  *
  * @param {Object} params
  * @param {number} params.start - Requested start time in minutes (0 - 1440)
@@ -20,13 +24,15 @@
  * @param {Array<{start: number, end: number}>} [params.bookings=[]] - Existing bookings
  * @returns {boolean} True if the room can be booked, false otherwise
  */
+import { normalizeBooking } from './adapters.js';
+
 export function canBook({ start, end, now, blocked = false, bookings = [] } = {}) {
   // AC3: Blocked room check
   if (blocked === true) {
     return false;
   }
 
-  // AC1 & T07: Strict type sanitization (reject non-integers, booleans, strings, floats, NaN, null)
+  // AC1 & T07: Strict type sanitization (reject non-integers, booleans, strings, floats, NaN, null, undefined)
   if (
     typeof start !== 'number' ||
     typeof end !== 'number' ||
@@ -50,7 +56,7 @@ export function canBook({ start, end, now, blocked = false, bookings = [] } = {}
 
   // AC2 & T04, T05: Duration check (max 120 minutes)
   const duration = end - start;
-  if (duration > 120 || duration <= 0) {
+  if (duration > 120) {
     return false;
   }
 
@@ -59,8 +65,10 @@ export function canBook({ start, end, now, blocked = false, bookings = [] } = {}
     return false;
   }
 
-  const hasOverlap = bookings.some(booking => {
-    if (!booking || typeof booking.start !== 'number' || typeof booking.end !== 'number') {
+  const hasOverlap = bookings.some(rawBooking => {
+    // Adapter normalization: handles both {start, end} and legacy {startTime, endTime}
+    const booking = normalizeBooking(rawBooking);
+    if (!booking) {
       return false;
     }
     // Strict overlap: touching endpoints (start === b.end || end === b.start) are NOT overlaps
