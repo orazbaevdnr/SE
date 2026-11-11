@@ -4,3 +4,7 @@ coverage/
 *.log
 .DS_Store
 Thumbs.db
+
+# Course material: kept locally, not published
+Lesson 08*.pdf
+assignment_04_antigravity_master_project.md
