@@ -13,6 +13,31 @@
 2. **Framework Restrictions:** Do NOT use React, Vue, Angular, or heavy UI frameworks. Use pure Vanilla JS and native DOM APIs.
 3. **Preserve AC1–AC6:** Never weaken, delete, or break the baseline acceptance criteria.
 4. **No Login / No Booking Persistence:** Only calculate availability decisions for display. No user accounts or storage.
+5. **Fictional Data Only:** All four catalog rooms and their bookings are fictional. The engine evaluates one selected room at a time; this preserves the Practice #10 "one room" audit scope without deleting the Assignment #04 catalog filters (F1–F5).
+
+---
+
+## 🚫 Forbidden Actions
+- Do **not** deploy, publish, or call external production services from an agent session.
+- Do **not** push to `main`, force-push, rewrite history, or merge without explicit human approval.
+- Do **not** add secrets, tokens, credentials, `.env` files, or real personal data.
+- Do **not** add a backend, database, login, booking persistence, or a new runtime dependency.
+- Do **not** weaken, delete, skip, or bypass AC1–AC6 or tests to make a check pass.
+
+---
+
+## 📁 Allowed Change Surface
+- **Allowed without asking:** `src/`, `tests/`, `index.html`, `README.md`, `AGENTS.md`.
+- **Ask the human first:** `package.json`, `package-lock.json`, `vite.config.js`, `start.bat`, `test.bat`.
+- **Never:** deployment configs, credentials, environment files, or external service integrations.
+
+---
+
+## ✅ Human Review Gate
+- Agent work stays on an isolated branch or worktree named `agent/<task-name>`.
+- Before merge, the agent supplies: changed-file list, full diff, `npm test` output, `npm run build` output, and a note of what was **not** verified.
+- A human reads the diff, reruns `npm test` and `npm run build`, checks AC1–AC6, and explicitly approves the merge.
+- Deployment is a separate human decision; the agent must not deploy.
 
 ---
 
@@ -53,3 +78,4 @@ Before proposing or applying any changes:
 4. Run regression tests (`npm test`) and ensure 100% pass rate.
 5. Verify both desktop (1280px) and mobile (375px) UI responsiveness.
 6. Report changed files, rationale, and exact test execution output.
+7. Never claim a command passed unless its actual output is attached; write **not run** when a check was not executed.
