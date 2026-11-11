@@ -4,6 +4,7 @@
  */
 
 import { rooms } from '../data/rooms.js';
+import { normalizeBooking } from '../domain/adapters.js';
 import { canBook } from '../domain/availability.js';
 import { filterRooms } from '../domain/filtering.js';
 
@@ -184,10 +185,15 @@ function render() {
     } else if (end - start > 120) {
       statusReason.textContent = `Requested duration (${end - start} min) exceeds the maximum allowed 120 minutes (AC2).`;
     } else {
-      // Overlap with existing booking
-      const conflictingBooking = selectedRoom.bookings.find(b => start < b.end && end > b.start);
+      // Overlap with existing booking (normalized so legacy shapes are displayed correctly)
+      const normalizedBookings = selectedRoom.bookings.map(normalizeBooking);
+      const conflictingBooking = normalizedBookings.find(
+        booking => booking && start < booking.end && end > booking.start
+      );
       if (conflictingBooking) {
         statusReason.textContent = `Conflict: Overlaps with an existing reservation (${minutesToTimeString(conflictingBooking.start)} - ${minutesToTimeString(conflictingBooking.end)}) (AC4).`;
+      } else if (normalizedBookings.some(booking => booking === null)) {
+        statusReason.textContent = `Conflict: ${selectedRoom.name} has an existing reservation that cannot be validated, so the room is treated as unavailable (AC4).`;
       } else {
         statusReason.textContent = 'Room cannot be booked for the specified parameters.';
       }

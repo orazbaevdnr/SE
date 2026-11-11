@@ -69,7 +69,9 @@ export function canBook({ start, end, now, blocked = false, bookings = [] } = {}
     // Adapter normalization: handles both {start, end} and legacy {startTime, endTime}
     const booking = normalizeBooking(rawBooking);
     if (!booking) {
-      return false;
+      // Fail closed: an unparseable booking cannot be proven non-conflicting.
+      // Ignoring it could report a room as free when its schedule is unknown.
+      return true;
     }
     // Strict overlap: touching endpoints (start === b.end || end === b.start) are NOT overlaps
     return start < booking.end && end > booking.start;
