@@ -18,7 +18,7 @@ A modular, client-side web application built with Vanilla JS, Vite, and Vitest. 
   - `src/domain/availability.js`: Pure availability logic function (`canBook`).
   - `src/domain/filtering.js`: Pure room filtering function (`filterRooms`).
   - `src/ui/app.js`: Reactive UI DOM controller.
-- **100% Automated Test Coverage:** 12 Vitest unit and integration tests covering all boundary conditions.
+- **Automated Regression Suite:** 19 Vitest tests (12 Assignment #04 cases, 6 adapter tests, and 1 Practice #10 malformed-booking regression test). No coverage tool is configured, so no coverage percentage is claimed.
 - **Responsive Design:** Supports 375px mobile viewports through desktop displays.
 
 ---
@@ -26,12 +26,12 @@ A modular, client-side web application built with Vanilla JS, Vite, and Vitest. 
 ## 🚀 Setup & Execution Instructions
 
 ### Prerequisites
-- Node.js (v18+ or v24+)
-- npm (v9+)
+- Node.js (v22.12+ or v24+; required by Vitest 5)
+- npm (v10+)
 
 ### Quick Start on Windows (1-Click)
-- **`start.bat`**: Дважды кликните по файлу `start.bat` в папке проекта. Скрипт сам проверит Node.js, установит зависимости (если их нет), выполнит все 12 тестов Vitest и автоматически откроет приложение в браузере!
-- **`test.bat`**: Быстрый запуск всех 12 тестов в подробном (verbose) режиме в 1 клик.
+- **`start.bat`**: Дважды кликните по файлу `start.bat` в папке проекта. Скрипт сам проверит Node.js, установит зависимости (если их нет), выполнит все 19 тестов Vitest и автоматически откроет приложение в браузере!
+- **`test.bat`**: Быстрый запуск всех 19 тестов в подробном (verbose) режиме в 1 клик.
 
 ### Terminal Commands
 Clone the repository and install dependencies:
@@ -61,9 +61,9 @@ npm run build
 
 ---
 
-## 🧪 Automated Test Suite (12 Vitest Tests)
+## 🧪 Automated Test Suite (19 Vitest Tests)
 
-All 12 test cases specified in the assignment contract are implemented across 3 test suites:
+The 12 Assignment #04 cases, 6 adapter tests, and 1 Practice #10 regression test run across 5 suites:
 
 | Suite | ID | Test Description | Rule / Feature | Status |
 |---|---|---|---|:---:|
@@ -79,18 +79,29 @@ All 12 test cases specified in the assignment contract are implemented across 3 
 | `filtering.test.js` | **T10** | Filters by ALL requested equipment | F2 | Passed ✓ |
 | `filtering.test.js` | **T11** | Returns empty array on impossible constraints | F4 | Passed ✓ |
 | `integration.test.js` | **T12** | Reactive room switching updates availability from false to true | F5 Integration | Passed ✓ |
+| `adapter.test.js` | **A01** | Normalizes canonical `{start, end}` shape | Adapter | Passed ✓ |
+| `adapter.test.js` | **A02** | Normalizes alternative `{startTime, endTime}` shape | Adapter | Passed ✓ |
+| `adapter.test.js` | **A03** | Normalizes `"HH:MM"` time strings | Adapter | Passed ✓ |
+| `adapter.test.js` | **A04** | Explicitly rejects malformed or invalid booking shapes | Adapter | Passed ✓ |
+| `adapter.test.js` | **A05** | Normalizes an array of mixed-format bookings | Adapter | Passed ✓ |
+| `adapter.test.js` | **A06** | `canBook` evaluates adapted legacy shapes | Adapter | Passed ✓ |
+| `availability-robustness.test.js` | **T13** | Rejects a request when an existing booking is malformed (fail-closed) | AC4 / R1 | Passed ✓ |
 
 ### Test Execution Output
+
+Captured on 2026-11-11 after the Practice #10 mitigations (raw log: `submit/evidence/24-test-after-vitest5.txt`):
 ```
- RUN  v3.2.7 C:/Users/support/Desktop/2kbtu/SE/Project
+ RUN  v5.1.0 C:/Users/support/Desktop/2kbtu/SE/Project
 
- ✓ tests/integration.test.js (1 test) 2ms
- ✓ tests/availability.test.js (7 tests) 4ms
- ✓ tests/filtering.test.js (4 tests) 4ms
+ ✓ tests/availability-robustness.test.js (1 test)
+ ✓ tests/availability.test.js (7 tests)
+ ✓ tests/adapter.test.js (6 tests)
+ ✓ tests/integration.test.js (1 test)
+ ✓ tests/filtering.test.js (4 tests)
 
- Test Files  3 passed (3)
-      Tests  12 passed (12)
-   Duration  661ms
+ Test Files  5 passed (5)
+      Tests  19 passed (19)
+   Duration  264ms
 ```
 
 ---
@@ -108,14 +119,17 @@ Project/
 │   ├── data/
 │   │   └── rooms.js         # 4 fictional rooms fixture (single source of truth)
 │   ├── domain/
+│   │   ├── adapters.js      # Booking shape adapter (normalizeBooking)
 │   │   ├── availability.js  # Pure canBook domain logic (AC1-AC5)
 │   │   └── filtering.js     # Pure filterRooms domain logic (F1-F4)
 │   └── ui/
 │       └── app.js           # Reactive UI event handler & DOM renderer (F5)
 └── tests/
-    ├── availability.test.js # Unit tests T01 - T07
-    ├── filtering.test.js    # Unit tests T08 - T11
-    └── integration.test.js  # Integration test T12
+    ├── adapter.test.js                 # Adapter tests A01 - A06
+    ├── availability.test.js            # Unit tests T01 - T07
+    ├── availability-robustness.test.js # Practice #10 regression test T13
+    ├── filtering.test.js               # Unit tests T08 - T11
+    └── integration.test.js             # Domain-level switching test T12
 ```
 
 ---

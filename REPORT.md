@@ -8,6 +8,8 @@
 **Submission Date:** November 04, 2026  
 **Deadline:** November 10, 2026 23:59:59  
 
+> **Document status (Practice #10 audit, 2026-11-11):** This is the historical Assignment #04 report and its "12 tests" result is the state at that submission. The current repository contains 19 tests (12 core + 6 adapter + 1 Practice #10 regression test); see `README.md` and `submit/evidence/08-test-after-r1.txt` for the current run.
+
 ---
 
 ## 📋 Task #01: Codebase Analysis
